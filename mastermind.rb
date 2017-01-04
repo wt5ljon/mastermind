@@ -70,26 +70,36 @@ class Board
 		@secret.keys.each { |k| @secret[k] = colors.sample }
 	end
 
+	def display_secret_code
+		puts "  Answer:"
+		puts ""
+		puts "    1   2   3   4"
+		puts "  +---+---+---+---+"
+		str = "  "
+		@secret.each { |k, v| str += "| #{v} " }
+		str += "|"
+		puts str
+		puts "  +---+---+---+---+"
+		puts ""
+	end
+
 end
 
 class Game
 	def initialize
 		@board = Board.new
+		@tries = 12
 	end
 
 	def play
 		@board.generate_secret_code
 		win = false
 		quit = false
-		pass = 0
+		pass = 1
 		puts ""
 		while not win
 			valid = true
-			if pass < 9
-				puts "  #{10 - pass} Guesses Remaining"
-			else
-				puts "  #{10 - pass} Guess Remaining"
-			end
+			puts "  Guess #{pass} of #{@tries}"
 			print "  Enter Four Pegs (B,G,O,P,R,Y) separated by spaces: " 
 			colors = gets.chomp.upcase
 			colors.split(" ").each do |color| 
@@ -116,13 +126,14 @@ class Game
 			fb = @board.get_feedback
 			@board.display(fb)
 			if fb[0] == 4
-				puts "  You Win in #{pass+1} Guesses!! - Game Over!"
+				puts "  You Win in #{pass} Guesses!! - Game Over!"
 				puts ""
 				break
 			else
-				if pass == 9
+				if pass == @tries
 					puts "  No More Guesses!! - Game Over!"
 				  puts ""
+					@board.display_secret_code
 					break
 				end
 			end
